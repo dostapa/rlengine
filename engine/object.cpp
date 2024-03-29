@@ -8,10 +8,10 @@ object::object() {
         this->tags[i] = new char[named_size];
         strcpy(this->tags[i],"empty");
     }
-    this->model = LoadModel("../models/default.obj");;
+    this->model = LoadModel("../models/default.obj");
     this->num_of_tags = 0;
     this->tint = PURPLE;
-    printf("<CONSTRUCTOR> Created new object #%d with name '%s'\n",
+    if(DEBUG)printf("<CONSTRUCTOR> Created new object #%d with name '%s'\n",
            this->id,this->name);
     this->collider = GetModelBoundingBox(this->model);
 
@@ -27,7 +27,7 @@ object::object(const char* nameIn, const char* modelPath, Color colorIn) {
     this->model = LoadModel(modelPath);
     this->num_of_tags = 0;
     this->tint = colorIn;
-    printf("<CONSTRUCTOR> Created new object #%d with name '%s', model path '%s'\n",
+    if(DEBUG)printf("<CONSTRUCTOR> Created new object #%d with name '%s', model path '%s'\n",
            this->id,this->name,modelPath);
     this->collider = GetModelBoundingBox(this->model);
 }
@@ -44,7 +44,7 @@ object::object(const char* nameIn, char * tagsIn[], size_t tagsSizeIn, const cha
     }
     this->tint = colorIn;
     this->num_of_tags = tagsSizeIn;
-    printf("<CONSTRUCTOR> Created new object #%d with name '%s', model path '%s'\n",
+    if(DEBUG)printf("<CONSTRUCTOR> Created new object #%d with name '%s', model path '%s'\n",
            this->id,this->name,modelPath);
     this->collider = GetModelBoundingBox(this->model);
 }
@@ -110,7 +110,7 @@ u16 object::get_id() const {
     return id;
 }
 
-Vector3 object::get_position(void) {
+Vector3 object::get_position() {
     return Vector3{this->model.transform.m12,this->model.transform.m13,this->model.transform.m14};
 }
 
@@ -139,7 +139,7 @@ void object::set_scale(Vector3 in) {
     this->collider = GetModelBoundingBox(this->model);
 }
 
-Vector3 object::get_scale(void) {
+Vector3 object::get_scale() {
     return Vector3{this->model.transform.m0,this->model.transform.m5,this->model.transform.m10};
 }
 
@@ -147,8 +147,8 @@ Vector3 object::get_scale(void) {
 
 void object::draw_object() {
     DrawModelEx(this->model, Vector3Zero(), Vector3Zero(), 0, {1,1,1}, this->tint);
-    DrawBoundingBox(this->collider, GREEN);
     set_position(this->get_position());
     set_rotation({0,0,0,0});
     set_scale(this->get_scale());
 }
+

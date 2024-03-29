@@ -20,8 +20,14 @@ void dfo::fullscreenCheck(bool &flag, int width, int height){
 
     }
     //Check for 'F11'
-    if(!flag && IsKeyPressed(KEY_F11)) flag = true;
-    else if (flag && IsKeyPressed(KEY_F11)) flag = false;
+    if(!flag && IsKeyPressed(KEY_F11)){
+        if(DEBUG)printf("enabling fullscreen\n");
+        flag = true;
+    }
+    else if (flag && IsKeyPressed(KEY_F11)) {
+        if(DEBUG)printf("disabling fullscreen\n");
+        flag = false;
+    }
 }
 void dfo::checkAndSetConfig(float &w, float &h, bool &full, float &fov, float& sens){
     int number_of_lines = 0;
@@ -40,28 +46,31 @@ void dfo::checkAndSetConfig(float &w, float &h, bool &full, float &fov, float& s
         }
         else if (line == "FULLSCREEN=1") {
             full = true;
-            fullscreenCheck(full,w,h);
+            fullscreenCheck(full,(int)w,(int)h);
             continue;
         }
         if (line.substr(0, 5) == "WIDTH") {
             int newWidth = stoi(line.substr(6));
-            w = newWidth;
+            w = (float)newWidth;
+            if(DEBUG)printf("width set to %f\n", w);
             continue;
         }
         else if (line.substr(0, 6) == "HEIGHT") {
             int newHeight = stoi(line.substr(7));
-            h = newHeight;
+            h = (float)newHeight;
+            if(DEBUG)printf("height set to %f\n", h);
             continue;
         }
         if(line.substr(0,3) == "FOV"){
             float newFov = stof(line.substr(4));
             fov = newFov;
+            if(DEBUG)printf("fov set to %f\n", fov);
             continue;
         }
         if(line.substr(0,4) == "SENS"){
             float newSens = stof(line.substr(5));
-            sens = newSens * pow(10,3);
-            printf("sensitivity set to %f", sens);
+            sens = newSens * (float)pow(10,3);
+            if(DEBUG)printf("sensitivity set to %f\n", sens);
             continue;
         }
     }
@@ -72,10 +81,10 @@ void dfo::playerControls(Camera &player, object* physPlayer, object* surface, fl
     player.position = {physPlayer->get_position().x, 3.5, physPlayer->get_position().z};
     UpdateCameraPro(&player,
                     (Vector3){
-                            (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))*speed*delta_time -      // Move forward-backward
-                            (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))*speed*delta_time,
-                            (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))*speed*delta_time -   // Move right-left
-                            (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))*speed*delta_time,
+                            (float)(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))*speed*delta_time -      // Move forward-backward
+                                (float)(IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))*speed*delta_time,
+                                (float)(IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))*speed*delta_time -   // Move right-left
+                                (float)(IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))*speed*delta_time,
                             0.0f                                                // Move up-down
                     },
                     (Vector3){
@@ -86,7 +95,7 @@ void dfo::playerControls(Camera &player, object* physPlayer, object* surface, fl
                     0.0f);
     if(!colliding(physPlayer,surface)){
         physPlayer->translate({0,gravity,0});
-        player.position = Vector3Subtract(physPlayer->get_position(),{0,-3.5,0});
+        player.position = {physPlayer->get_position().x, physPlayer->get_position().y+4.5f, physPlayer->get_position().z};
         if(physPlayer->get_position().y <= -100){
             physPlayer->set_position({0,50,0});
             player.position =Vector3Subtract(physPlayer->get_position(),{0,-3.5,0});

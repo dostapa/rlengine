@@ -7,6 +7,7 @@
 #define MAXENTITIES 200
 #include "common.h"
 #include "object.h"
+
 namespace dfo {
     class scene {
     private:
@@ -33,6 +34,9 @@ namespace dfo {
         void remove_all_by_name(const char *name);
 
         void draw_scene();
+
+        size_t get_size();
+
     };
 
 }

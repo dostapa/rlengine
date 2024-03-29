@@ -66,7 +66,14 @@ scene::scene() {
 
 void scene::draw_scene() {
     for(auto& obj : s){
-        obj->draw_object();
+        if (obj->draw)
+            obj->draw_object();
+        if (obj->wires)
+            DrawBoundingBox(obj->get_collider(), GREEN);
     }
 
+}
+
+size_t scene::get_size() {
+    return s.size();
 }

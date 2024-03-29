@@ -17,8 +17,10 @@ namespace dfo {
 
         Model model{};
         BoundingBox collider{};
-        Color tint;
+        Color tint{};
     public:
+        bool draw = true , border = true;
+
         object();
 
         object(const char *, const char *, Color);
@@ -39,9 +41,10 @@ namespace dfo {
 
         [[nodiscard]] char *get_name() const;
 
-        Vector3 get_position(void);
 
-        Vector3 get_scale(void);
+        Vector3 get_position();
+
+        Vector3 get_scale();
 
         void set_position(Vector3);
 

@@ -12,6 +12,8 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "rlights.h"
+
+const bool DEBUG = true;
 namespace dfo{
 #define delta_time GetFrameTime()
 #define GLSL_VERSION 330

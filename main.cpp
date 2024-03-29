@@ -13,42 +13,29 @@ int main() {
     bool fullscreen = false;
     checkAndSetConfig(width, height, fullscreen, fov, sensitivity);
 
-    char **tags = new char *[max_tags];
-    for (int i = 0; i < max_tags; ++i) {
-        tags[i] = new char[named_size];
-    }
-    tags[0] = (char *) "Player";
-    tags[1] = (char *) "Generic";
-    tags[2] = (char *) "Ground";
-    tags[3] = (char *) "Enemy";
-    tags[4] = (char *) "Liquid";
-    tags[5] = (char *) "UI";
-    tags[6] = (char *) "Controllable";
-    tags[7] = (char *) "Custom";
-    tags[8] = (char *) "Custom";
-    tags[9] = (char *) "Custom";
+    char * tags[] = {"Player","Ground","default","default","default","default","default","default","default","default"};
 
-    InitWindow(width, height, "Window");
+    InitWindow((int)width, (int)height, "Window");
     InitAudioDevice();
     SetMasterVolume(100);
     Music fartnuts = LoadMusicStream("../resources/audio/poopfartnuts.mp3");
-    PlayMusicStream(fartnuts);
-    scene scene1;
+    auto* scene1 = new scene();
     SetWindowFocused();
 
-    object *player = scene1.add_to_scene(
+    object *player = scene1->add_to_scene(
             "Player",
             "../resources/models/player.obj",
-            tags,
+            &tags[0],
             1,
             WHITE
             );
     player->set_position({0, 10, 0});
+    player->draw = false;
 
-    object *ground = scene1.add_to_scene(
+    object *ground = scene1->add_to_scene(
             "Ground",
             "../resources/models/cube.obj",
-            &tags[2],
+            &tags[1],
             1,
             WHITE
     );
@@ -61,12 +48,16 @@ int main() {
     camera.fovy = fov;
     camera.projection = CAMERA_PERSPECTIVE;
     camera.up = {0,1,0};
-
+    PlayMusicStream(fartnuts);
+    printf("%d\n", IsMusicStreamPlaying(fartnuts));
     while(!WindowShouldClose()){
+
+        UpdateMusicStream(fartnuts);
+        printf("%d\n", IsMusicStreamPlaying(fartnuts));
         int fps = GetFPS();
         char buf[5] = {0};
         itoa(fps,buf,10);
-        fullscreenCheck(fullscreen,width,height);
+        fullscreenCheck(fullscreen,(int)width,(int)height);
         playerControls(camera,player, ground, (IsKeyDown(KEY_LEFT_SHIFT)) ? 14.50f : 7.25, sensitivity);
         if(GetMouseX() < 5){
             if(GetMouseY() < 5)
@@ -88,11 +79,11 @@ int main() {
         BeginDrawing();
         ClearBackground(SKYBLUE);
             BeginMode3D(camera);
-                scene1.draw_scene();
-                if(IsKeyPressed(KEY_J)){
-                    object * thingy = scene1.add_to_scene(
+                scene1->draw_scene();
+                if(IsKeyDown(KEY_J)){
+                    object * thingy = scene1->add_to_scene(
                             "Cube",
-                            "../models/cube.obj",
+                            "../resources/models/cube.obj",
                             &tags[1],
                             1,
                             GREEN
@@ -105,8 +96,11 @@ int main() {
         EndDrawing();
     }
     CloseWindow();
+    CloseAudioDevice();
+    scene1->clear_scene();
 
-    scene1.clear_scene();
-    delete[] tags;
+    while(scene1->get_size() != 0);
+    delete scene1;
+
     exit(0);
 }
