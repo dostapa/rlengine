@@ -32,6 +32,11 @@ namespace dfo {
         inline BoundingBox& get_collider() {
             return collider;
         }
+
+        inline Model& get_model() {
+            return model;
+        }
+
         ~object();
 
 

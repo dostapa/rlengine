@@ -23,7 +23,7 @@
 #include "raymath.h"
 
 #define RLIGHTS_IMPLEMENTATION
-#include "rlights.h"
+#include "../../raylib/rlights.h"
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330

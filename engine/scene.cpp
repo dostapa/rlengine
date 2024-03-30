@@ -5,8 +5,8 @@
 #include "scene.h"
 #include <cstring>
 using namespace dfo;
-void scene::add_to_scene(const char* nameIn, const char* modelPath, Color tintIn) {
-    s.emplace_back(new object(nameIn,modelPath, tintIn));
+object * scene::add_to_scene(const char* nameIn, const char* modelPath, Color tintIn) {
+    return s.emplace_back(new object(nameIn,modelPath, tintIn));
 }
 
 object * scene::add_to_scene(const char *nameIn, const char *modelPath, char *tags[], size_t num_of_tags, Color tintIn) {
@@ -17,6 +17,7 @@ object *scene::get_by_id(u16 id) {
     for(auto& obj : s){
         if(obj->get_id() == id) return obj;
     }
+    return nullptr;
 }
 
 object *scene::get_all_by_name(const char *name) {
@@ -49,7 +50,7 @@ object *scene::get_at(u16 idx) {
 }
 
 bool scene::remove_by_id(u16 id) {
-    for(int i = 0 ; i < s.size() ; i++){
+    for(u16 i = 0 ; i < s.size() ; i++){
         u16 currId = s.at(i)->get_id();
         if(currId == id){
             delete s.at(i);
@@ -68,7 +69,7 @@ void scene::draw_scene() {
     for(auto& obj : s){
         if (obj->draw)
             obj->draw_object();
-        if (obj->wires)
+        if (obj->border)
             DrawBoundingBox(obj->get_collider(), GREEN);
     }
 

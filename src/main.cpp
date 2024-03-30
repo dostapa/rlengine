@@ -1,19 +1,18 @@
-#include "engine/object.h"
-#include "engine/scene.h"
-#include "engine/util.h"
+#include "../engine/object.h"
+#include "../engine/scene.h"
+#include "../engine/util.h"
 
 
 using namespace std;
 using namespace dfo;
 
 int main() {
-
-
     float fov = 70.0f, sensitivity = 1.0f, width = 800, height= 800;
     bool fullscreen = false;
     checkAndSetConfig(width, height, fullscreen, fov, sensitivity);
 
-    char * tags[] = {"Player","Ground","default","default","default","default","default","default","default","default"};
+    char * tags[] = {(char*)"Player",(char*)"Ground",(char*)"default",(char*)"default",
+            (char*)"default",(char*)"default",(char*)"default",(char*)"default",(char*)"default",(char*)"default"};
 
     InitWindow((int)width, (int)height, "Window");
     InitAudioDevice();
@@ -56,7 +55,7 @@ int main() {
         printf("%d\n", IsMusicStreamPlaying(fartnuts));
         int fps = GetFPS();
         char buf[5] = {0};
-        itoa(fps,buf,10);
+        sprintf(buf,"%d",fps);
         fullscreenCheck(fullscreen,(int)width,(int)height);
         playerControls(camera,player, ground, (IsKeyDown(KEY_LEFT_SHIFT)) ? 14.50f : 7.25, sensitivity);
         if(GetMouseX() < 5){

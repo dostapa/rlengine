@@ -18,7 +18,7 @@
 #include "raymath.h"
 
 #define RLIGHTS_IMPLEMENTATION
-#include "rlights.h"
+#include "../../raylib/rlights.h"
 
 #include <stdlib.h>         // Required for: calloc(), free()
 

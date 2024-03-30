@@ -9,9 +9,9 @@
 #include <cstring>
 #include <fstream>
 #include <vector>
-#include "raylib.h"
-#include "raymath.h"
-#include "rlights.h"
+#include "../raylib/raylib.h"
+#include "../raylib/raymath.h"
+#include "../raylib/rlights.h"
 
 const bool DEBUG = true;
 namespace dfo{

@@ -32,12 +32,12 @@ void dfo::fullscreenCheck(bool &flag, int width, int height){
 void dfo::checkAndSetConfig(float &w, float &h, bool &full, float &fov, float& sens){
     int number_of_lines = 0;
     std::string line;
-    std::ifstream cfg("../config.cfg");
+    std::ifstream cfg("config.cfg");
     while(!cfg.is_open());
     while (std::getline(cfg, line))
         ++number_of_lines;
     cfg.close();
-    cfg.open("../config.cfg", std::ifstream::in);
+    cfg.open("config.cfg", std::ifstream::in);
     for(int i = 0 ; i<number_of_lines;i++) {
         std::getline(cfg, line);
         if (line == "FULLSCREEN=0"){
