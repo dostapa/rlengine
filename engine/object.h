@@ -22,6 +22,7 @@ namespace dfo {
         bool draw = true , border = true;
 
         object();
+        object(const char *, Model* , Color);
 
         object(const char *, const char *, Color);
 

@@ -31,6 +31,20 @@ object::object(const char* nameIn, const char* modelPath, Color colorIn) {
            this->id,this->name,modelPath);
     this->collider = GetModelBoundingBox(this->model);
 }
+object::object(const char *name_in, Model * model_in, Color tint_in) {
+        this->id=++Id;
+        strcpy(this->name,name_in);
+        for(int i = 0 ; i<max_tags; ++i){
+            this->tags[i] = new char[named_size];
+            strcpy(this->tags[i],"empty");
+        }
+        this->model = *model_in;
+        this->num_of_tags = 0;
+        this->tint = tint_in;
+        if(DEBUG)printf("<CONSTRUCTOR> Created new object #%d with name '%s'\n",
+                        this->id,this->name);
+        this->collider = GetModelBoundingBox(this->model);
+}
 
 object::object(const char* nameIn, char * tagsIn[], size_t tagsSizeIn, const char* modelPath, Color colorIn) {
     this->model = LoadModel(modelPath);
@@ -122,7 +136,8 @@ void object::set_position(Vector3 in) {
 }
 
 void object::translate(Vector3 in){
-    this->model.transform = MatrixMultiply(this->model.transform, MatrixTranslate(in.x,in.y,in.z));
+    Vector3 newPosition = Vector3Add(get_position(),in);
+    set_position(newPosition);
     this->collider = GetModelBoundingBox(this->model);
 }
 
@@ -151,4 +166,5 @@ void object::draw_object() {
     set_rotation({0,0,0,0});
     set_scale(this->get_scale());
 }
+
 

@@ -16,7 +16,8 @@ namespace dfo {
         scene();
 
         ~scene() = default;
-
+        object *add_to_scene(object*);
+        object *add_to_scene(const char *, Model*, Color);
         object *add_to_scene(const char *, const char *, Color);
 
         object *add_to_scene(const char *, const char *, char *[], size_t, Color);

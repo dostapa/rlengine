@@ -8,6 +8,26 @@
 
 using namespace dfo;
 
+void dfo::bind_mouse(){
+    if(GetMouseX() < 5){
+        if(GetMouseY() < 5)
+            SetMousePosition(6,6);
+        else
+            SetMousePosition(6,GetMouseY());
+    }
+    else if(GetMouseY() < 5) {
+        SetMousePosition(GetMouseX(), 6);
+    }
+    else if(GetMouseX() > GetScreenWidth()-9){
+        if(GetMouseY() > GetScreenHeight()-9)
+            SetMousePosition(GetScreenWidth()-10,GetScreenHeight()-10);
+        SetMousePosition(GetScreenWidth()-10,GetMouseY());
+    }
+    else if(GetMouseY() > GetScreenHeight()-9) {
+        SetMousePosition(GetMouseX(), GetScreenHeight()-10);
+    }
+}
+
 void dfo::fullscreenCheck(bool &flag, int width, int height){
     if(!flag){
         SetWindowSize(width,height);
@@ -32,7 +52,7 @@ void dfo::fullscreenCheck(bool &flag, int width, int height){
 void dfo::checkAndSetConfig(float &w, float &h, bool &full, float &fov, float& sens){
     int number_of_lines = 0;
     std::string line;
-    std::ifstream cfg("config.cfg");
+    std::ifstream cfg("../config.cfg");
     while(!cfg.is_open());
     while (std::getline(cfg, line))
         ++number_of_lines;

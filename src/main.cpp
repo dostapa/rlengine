@@ -1,105 +1,92 @@
 #include "../engine/object.h"
 #include "../engine/scene.h"
 #include "../engine/util.h"
-
+#include <thread>
 
 using namespace std;
 using namespace dfo;
+const Vector3 enemySpawn = {50,1,50};
+const Vector3 enemyGoal = {64,1, 50.25};
+vector<object*> enemies;
 
 int main() {
     float fov = 70.0f, sensitivity = 1.0f, width = 800, height= 800;
     bool fullscreen = false;
     checkAndSetConfig(width, height, fullscreen, fov, sensitivity);
 
-    char * tags[] = {(char*)"Player",(char*)"Ground",(char*)"default",(char*)"default",
-            (char*)"default",(char*)"default",(char*)"default",(char*)"default",(char*)"default",(char*)"default"};
-
     InitWindow((int)width, (int)height, "Window");
     InitAudioDevice();
     SetMasterVolume(100);
-    Music fartnuts = LoadMusicStream("../resources/audio/poopfartnuts.mp3");
-    auto* scene1 = new scene();
-    SetWindowFocused();
-
-    object *player = scene1->add_to_scene(
-            "Player",
-            "../resources/models/player.obj",
-            &tags[0],
-            1,
-            WHITE
-            );
-    player->set_position({0, 10, 0});
-    player->draw = false;
-
-    object *ground = scene1->add_to_scene(
-            "Ground",
-            "../resources/models/cube.obj",
-            &tags[1],
-            1,
-            WHITE
-    );
-    ground->set_scale({50, 5, 50});
-    ground->set_position({0, -5, 0});
-
+    //Music fartnuts = LoadMusicStream("../resources/audio/poopfartnuts.mp3");
+    auto* Scene = new scene(); // ->
+    auto* path = Scene->add_to_scene("path","../resources/models/pathone.obj",WHITE);
+    auto* end = Scene->add_to_scene("end_point","../resources/models/default.obj",WHITE);
+    Texture2D texture = LoadTexture("../resources/check.png");
+    GenTextureMipmaps(&texture);
+    end->set_position(enemyGoal);
+    end->set_scale({0.5f,0.5f,0.5f});
+    SetTextureWrap(texture,TEXTURE_WRAP_MIRROR_CLAMP);
+    SetMaterialTexture(&end->get_model().materials[0], MATERIAL_MAP_DIFFUSE, texture);
+    path->set_position({50,0,50.5});
+    path->set_scale({1,1,1});
     Camera3D camera = {0};
-    camera.target = {0, 0, 0};
-    camera.position = { -15,3.5,-15};
+    camera.target = enemySpawn;
+    camera.position = { 50,20,40};
     camera.fovy = fov;
     camera.projection = CAMERA_PERSPECTIVE;
     camera.up = {0,1,0};
-    PlayMusicStream(fartnuts);
-    printf("%d\n", IsMusicStreamPlaying(fartnuts));
-    while(!WindowShouldClose()){
+    //PlayMusicStream(fartnuts);
 
-        UpdateMusicStream(fartnuts);
-        printf("%d\n", IsMusicStreamPlaying(fartnuts));
-        int fps = GetFPS();
-        char buf[5] = {0};
-        sprintf(buf,"%d",fps);
+    double enemyTimer = GetTime()+5;
+    BoundingBox path_collider = path->get_collider();
+
+    while(!WindowShouldClose()){
+        if(GetTime() >= enemyTimer){
+            object* newEnemy = Scene->add_to_scene("Enemy", "../resources/models/cube.obj",WHITE);
+            newEnemy->set_scale({0.5, 0.5, 0.5});
+            newEnemy->set_position(enemySpawn);
+            enemies.push_back(newEnemy);
+            enemyTimer = GetTime()+5;
+        }
+
+        for(auto enemy : enemies){
+            if(enemy->get_position().x < enemyGoal.x){
+                enemy->translate({2*delta_time,0,0});
+            }
+        }
+
+        for (int i = 0; i < enemies.size(); ++i) {
+            if(colliding(enemies.at(i),end)){
+                object* t = enemies.back();
+                enemies.back() = enemies.at(i);
+                enemies.at(i) = t;
+                u16 id = enemies.back()->get_id();
+                enemies.pop_back();
+                Scene->remove_by_id(id);
+            }
+        }
+
+        //UpdateMusicStream(fartnuts);
+        char fpsBuffer[5] = {0};
+        sprintf(fpsBuffer,"%d",GetFPS());
         fullscreenCheck(fullscreen,(int)width,(int)height);
-        playerControls(camera,player, ground, (IsKeyDown(KEY_LEFT_SHIFT)) ? 14.50f : 7.25, sensitivity);
-        if(GetMouseX() < 5){
-            if(GetMouseY() < 5)
-                SetMousePosition(6,6);
-            else
-                SetMousePosition(6,GetMouseY());
-        }
-        else if(GetMouseY() < 5) {
-            SetMousePosition(GetMouseX(), 6);
-        }
-        else if(GetMouseX() > GetScreenWidth()-9){
-            if(GetMouseY() > GetScreenHeight()-9)
-                SetMousePosition(GetScreenWidth()-10,GetScreenHeight()-10);
-            SetMousePosition(GetScreenWidth()-10,GetMouseY());
-        }
-        else if(GetMouseY() > GetScreenHeight()-9) {
-            SetMousePosition(GetMouseX(), GetScreenHeight()-10);
-        }
+        bind_mouse();
+
         BeginDrawing();
         ClearBackground(SKYBLUE);
+        DrawText(fpsBuffer,5,5,35,BLACK);
+
             BeginMode3D(camera);
-                scene1->draw_scene();
-                if(IsKeyDown(KEY_J)){
-                    object * thingy = scene1->add_to_scene(
-                            "Cube",
-                            "../resources/models/cube.obj",
-                            &tags[1],
-                            1,
-                            GREEN
-                            );
-                    thingy->set_position({(float)GetRandomValue(0, 255), (float)GetRandomValue(0, 255), (float)GetRandomValue(0, 255)});
-                    thingy->set_scale({5,5,5});
-                }
+                Scene->draw_scene();
             EndMode3D();
-        DrawText(buf,5,5,35,PURPLE);
         EndDrawing();
     }
+    printf("\bQUITTING\n\n");
     CloseWindow();
     CloseAudioDevice();
-    scene1->clear_scene();
-
-    while(scene1->get_size() != 0);
-    delete scene1;
+    enemies.clear();
+    Scene->clear_scene();
+    delete Scene;
 
     exit(0);
 }

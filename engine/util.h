@@ -7,6 +7,7 @@
 #include "common.h"
 #include "object.h"
 namespace dfo{
+    void bind_mouse();
     bool colliding(object* in1, object* in2);
     bool grounded(object* ground, object* groundee);
     void checkAndSetConfig(float &w, float &h, bool &full, float &fov, float& sens);

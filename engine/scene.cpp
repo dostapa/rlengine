@@ -5,6 +5,9 @@
 #include "scene.h"
 #include <cstring>
 using namespace dfo;
+object * scene::add_to_scene(const char* name_in, Model* mdl_in, Color tint_in){
+    return s.emplace_back(new object(name_in, mdl_in, tint_in));
+}
 object * scene::add_to_scene(const char* nameIn, const char* modelPath, Color tintIn) {
     return s.emplace_back(new object(nameIn,modelPath, tintIn));
 }
@@ -77,4 +80,9 @@ void scene::draw_scene() {
 
 size_t scene::get_size() {
     return s.size();
+}
+
+object *scene::add_to_scene(object* in) {
+    s.push_back(in);
+    return s.back();
 }
