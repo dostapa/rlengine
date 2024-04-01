@@ -64,9 +64,7 @@ bool scene::remove_by_id(u16 id) {
     return false;
 }
 
-scene::scene() {
-    this->s.reserve(MAXENTITIES);
-}
+scene::scene() = default;
 
 void scene::draw_scene() {
     for(auto& obj : s){
